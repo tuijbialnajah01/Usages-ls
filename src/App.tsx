@@ -120,7 +120,6 @@ export default function App() {
       }
     }
     return Array.from(cmdMap.values()).sort((a, b) => {
-      if (a.category !== b.category) return a.category.localeCompare(b.category);
       return a.name.localeCompare(b.name);
     });
   }, [dbCommands]);
@@ -222,10 +221,10 @@ export default function App() {
             ) : (
               <button 
                 onClick={login}
-                className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white bg-slate-900 hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-200 rounded-xl transition-all duration-300 active:scale-95"
+                title="Admin Login"
+                className="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 hover:text-indigo-600 hover:bg-transparent border border-transparent hover:border-transparent transition-all active:scale-95 hover:bg-slate-100"
               >
-                <LogIn className="w-4 h-4" />
-                Admin/Mod Login
+                <ShieldCheck className="w-5 h-5" />
               </button>
             )
           )}
