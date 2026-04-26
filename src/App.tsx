@@ -44,7 +44,17 @@ const STATUS_LABELS = {
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loadingContext, setLoadingContext] = useState(true);
-  const [dbCommands, setDbCommands] = useState<Command[]>([]);
+  const [dbCommands, setDbCommands] = useState<Command[]>(() => {
+    try {
+      const cached = localStorage.getItem('cmdStatusDbCache');
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch (e) {
+      console.warn("Could not read from localStorage cache", e);
+    }
+    return [];
+  });
   const [search, setSearch] = useState('');
   const deferredSearch = useDeferredValue(search);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -59,6 +69,10 @@ export default function App() {
     });
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cmdStatusDbCache', JSON.stringify(dbCommands));
+  }, [dbCommands]);
 
   useEffect(() => {
     const path = 'commands';
