@@ -47,6 +47,7 @@ export default function App() {
   const [dbCommands, setDbCommands] = useState<Command[]>([]);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -162,9 +163,10 @@ export default function App() {
     return allCommands.filter(c => {
       const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase());
       const matchesCat = selectedCategory ? c.category === selectedCategory : true;
-      return matchesSearch && matchesCat;
+      const matchesStatus = selectedStatus === null ? true : c.status === selectedStatus;
+      return matchesSearch && matchesCat && matchesStatus;
     });
-  }, [allCommands, search, selectedCategory]);
+  }, [allCommands, search, selectedCategory, selectedStatus]);
 
   return (
     <div className="h-screen bg-[#F8FAFC] text-slate-800 font-sans flex flex-col overflow-hidden selection:bg-indigo-100 selection:text-indigo-900">
@@ -311,32 +313,61 @@ export default function App() {
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between shrink-0 gap-4">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }} 
-              animate={{ opacity: 1, x: 0 }} 
-              className="space-y-1.5"
-            >
-              <h2 className="text-3xl flex items-center gap-3 font-extrabold text-slate-900 tracking-tight">
-                {selectedCategory ? selectedCategory : "All Commands"}
-                {allCommands.length > 0 && (
-                   <span className="text-sm font-semibold px-2.5 py-1 bg-white text-slate-600 rounded-lg border border-slate-200/60 shadow-sm tabular-nums">
-                     {filteredCommands.length} {filteredCommands.length === allCommands.length ? 'total' : `of ${allCommands.length}`}
-                   </span>
-                )}
-              </h2>
-              <p className="text-sm text-slate-500 font-medium">
-                Live status tracking for {selectedCategory ? <span className="text-indigo-600 font-semibold">{selectedCategory.toLowerCase()}</span> : 'all'} bot modules.
-              </p>
-            </motion.div>
-             {userIsAdmin && allCommands.length > 0 && (
-               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
-                 <div className="px-4 py-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider rounded-lg hidden sm:flex items-center gap-2">
-                   <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-                   Admin Edit Mode
-                 </div>
-               </motion.div>
-             )}
+          <div className="flex flex-col gap-5 shrink-0 relative z-10">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }} 
+                animate={{ opacity: 1, x: 0 }} 
+                className="space-y-1.5"
+              >
+                <h2 className="text-3xl flex items-center gap-3 font-extrabold text-slate-900 tracking-tight">
+                  {selectedCategory ? selectedCategory : "All Commands"}
+                  {allCommands.length > 0 && (
+                     <span className="text-sm font-semibold px-2.5 py-1 bg-white text-slate-600 rounded-lg border border-slate-200/60 shadow-sm tabular-nums">
+                       {filteredCommands.length} {filteredCommands.length === allCommands.length ? 'total' : `of ${allCommands.length}`}
+                     </span>
+                  )}
+                </h2>
+                <p className="text-sm text-slate-500 font-medium">
+                  Live status tracking for {selectedCategory ? <span className="text-indigo-600 font-semibold">{selectedCategory.toLowerCase()}</span> : 'all'} bot modules.
+                </p>
+              </motion.div>
+               {userIsAdmin && allCommands.length > 0 && (
+                 <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+                   <div className="px-4 py-2 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider rounded-lg hidden sm:flex items-center gap-2">
+                     <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                     Admin Edit Mode
+                   </div>
+                 </motion.div>
+               )}
+            </div>
+
+            {/* Status Toggles */}
+            {allCommands.length > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: 0.1 }} 
+                className="flex flex-wrap items-center gap-2"
+              >
+                {(['working', 'in_development', 'not_working'] as const).map(status => (
+                  <button
+                    key={status}
+                    onClick={() => setSelectedStatus(selectedStatus === status ? null : status)}
+                    className={cn(
+                      "px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 border",
+                      selectedStatus === status 
+                        ? status === 'working' ? "bg-emerald-50 text-emerald-700 border-emerald-200 shadow-sm"
+                        : status === 'in_development' ? "bg-amber-50 text-amber-700 border-amber-200 shadow-sm"
+                        : "bg-rose-50 text-rose-700 border-rose-200 shadow-sm"
+                        : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
+                    )}
+                  >
+                    {STATUS_LABELS[status]}
+                  </button>
+                ))}
+              </motion.div>
+            )}
           </div>
 
           {errorMsg && (
