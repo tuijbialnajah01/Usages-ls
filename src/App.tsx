@@ -184,7 +184,7 @@ export default function App() {
 
   return (
     <div className="h-screen bg-[#F8FAFC] text-slate-800 font-sans flex flex-col overflow-hidden selection:bg-indigo-100 selection:text-indigo-900">
-      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-6 sm:px-8 py-4 flex items-center justify-between shrink-0 z-20 shadow-sm shadow-slate-100/50">
+      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-6 sm:px-8 py-4 flex items-center justify-between shrink-0 z-20 shadow-sm shadow-slate-100/50 relative">
         <motion.div 
           initial={{ opacity: 0, y: -10 }} 
           animate={{ opacity: 1, y: 0 }} 
@@ -196,6 +196,17 @@ export default function App() {
           <h1 className="text-xl font-bold tracking-tight text-slate-800 hidden sm:block">
             CommandStatus<span className="text-indigo-600 font-black">.io</span>
           </h1>
+        </motion.div>
+
+        <motion.div
+           initial={{ opacity: 0, scale: 0.9 }}
+           animate={{ opacity: 1, scale: 1 }}
+           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden sm:flex items-center"
+        >
+           <span className="font-mono text-xs font-bold px-3 py-1.5 bg-slate-900 text-slate-100 rounded-lg shadow-sm tracking-widest uppercase flex items-center gap-2 shadow-slate-900/10">
+             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+             Debug Zone
+           </span>
         </motion.div>
 
         <motion.div 
