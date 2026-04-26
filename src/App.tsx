@@ -3,7 +3,7 @@ import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, User 
 import { collection, onSnapshot, doc, setDoc, getDocs, updateDoc, writeBatch } from 'firebase/firestore';
 import { auth, db, handleFirestoreError, OperationType } from './lib/firebase';
 import { INITIAL_COMMANDS } from './data/commands';
-import { CheckCircle2, CircleDashed, XCircle, LogIn, LogOut, ShieldCheck, Search, Database } from 'lucide-react';
+import { CheckCircle2, CircleDashed, XCircle, LogIn, LogOut, ShieldCheck, Search, Database, ChevronDown, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from './lib/utils';
 
@@ -319,14 +319,30 @@ export default function App() {
                 animate={{ opacity: 1, x: 0 }} 
                 className="space-y-1.5"
               >
-                <h2 className="text-3xl flex items-center gap-3 font-extrabold text-slate-900 tracking-tight">
-                  {selectedCategory ? selectedCategory : "All Commands"}
-                  {allCommands.length > 0 && (
-                     <span className="text-sm font-semibold px-2.5 py-1 bg-white text-slate-600 rounded-lg border border-slate-200/60 shadow-sm tabular-nums">
-                       {filteredCommands.length} {filteredCommands.length === allCommands.length ? 'total' : `of ${allCommands.length}`}
-                     </span>
-                  )}
-                </h2>
+                <div className="flex items-center flex-wrap gap-x-4 gap-y-2">
+                  <h2 className="text-3xl flex items-center gap-3 font-extrabold text-slate-900 tracking-tight">
+                    {selectedCategory ? selectedCategory : "All Commands"}
+                    {allCommands.length > 0 && (
+                       <span className="text-sm font-semibold px-2.5 py-1 bg-white text-slate-600 rounded-lg border border-slate-200/60 shadow-sm tabular-nums hidden sm:inline-block">
+                         {filteredCommands.length} {filteredCommands.length === allCommands.length ? 'total' : `of ${allCommands.length}`}
+                       </span>
+                    )}
+                  </h2>
+                  <div className="relative md:hidden">
+                    <select
+                      value={selectedCategory || ''}
+                      onChange={(e) => setSelectedCategory(e.target.value || null)}
+                      className="pl-9 pr-8 py-2 md:py-1.5 bg-white border border-slate-200 text-slate-700 rounded-xl md:rounded-lg text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none transition-colors shadow-sm"
+                    >
+                      <option value="">All Categories</option>
+                      {categories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                    <Filter className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                </div>
                 <p className="text-sm text-slate-500 font-medium">
                   Live status tracking for {selectedCategory ? <span className="text-indigo-600 font-semibold">{selectedCategory.toLowerCase()}</span> : 'all'} bot modules.
                 </p>
