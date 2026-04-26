@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useDeferredValue } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, User } from 'firebase/auth';
 import { collection, onSnapshot, doc, setDoc, getDocs, updateDoc, writeBatch } from 'firebase/firestore';
 import { auth, db, handleFirestoreError, OperationType } from './lib/firebase';
@@ -46,6 +46,7 @@ export default function App() {
   const [loadingContext, setLoadingContext] = useState(true);
   const [dbCommands, setDbCommands] = useState<Command[]>([]);
   const [search, setSearch] = useState('');
+  const deferredSearch = useDeferredValue(search);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
@@ -160,12 +161,12 @@ export default function App() {
 
   const filteredCommands = useMemo(() => {
     return allCommands.filter(c => {
-      const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase());
+      const matchesSearch = c.name.toLowerCase().includes(deferredSearch.toLowerCase());
       const matchesCat = selectedCategory ? c.category === selectedCategory : true;
       const matchesStatus = selectedStatus === null ? true : c.status === selectedStatus;
       return matchesSearch && matchesCat && matchesStatus;
     });
-  }, [allCommands, search, selectedCategory, selectedStatus]);
+  }, [allCommands, deferredSearch, selectedCategory, selectedStatus]);
 
   return (
     <div className="h-screen bg-[#F8FAFC] text-slate-800 font-sans flex flex-col overflow-hidden selection:bg-indigo-100 selection:text-indigo-900">
@@ -418,15 +419,14 @@ export default function App() {
              </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 items-start">
-              <AnimatePresence mode="popLayout">
+              <AnimatePresence>
                 {filteredCommands.map((cmd, i) => (
                   <motion.div
                     key={cmd.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.2, delay: i < 20 ? i * 0.02 : 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
                     className={cn(
                       "bg-white border rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden transition-all duration-300 group hover:-translate-y-1",
                       cmd.status === 'in_development' ? "border-amber-200 shadow-[0_4px_20px_-4px_rgba(251,191,36,0.15)] hover:shadow-[0_8px_30px_-4px_rgba(251,191,36,0.25)]" : 
