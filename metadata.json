@@ -1,5 +1,5 @@
 {
-  "name": "Command Status Dashboard",
+  "name": "Debug Zone",
   "description": "A public dashboard to track the status of bot commands, allowing admins to mark them as working or in development.",
   "requestFramePermissions": [],
   "majorCapabilities": []
