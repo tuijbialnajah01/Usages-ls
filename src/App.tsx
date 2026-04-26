@@ -194,7 +194,12 @@ export default function App() {
               type="text" 
               placeholder="Search commands..." 
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                if (e.target.value.length > 0 && selectedCategory) {
+                  setSelectedCategory(null);
+                }
+              }}
               className="bg-slate-100/80 border border-transparent hover:bg-slate-100 rounded-full py-2 pl-10 pr-4 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:shadow-md transition-all duration-300"
             />
             <Search className="absolute left-3.5 top-2.5 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
@@ -307,7 +312,12 @@ export default function App() {
               type="text" 
               placeholder="Search commands..." 
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                if (e.target.value.length > 0 && selectedCategory) {
+                  setSelectedCategory(null);
+                }
+              }}
               className="w-full bg-white border border-slate-200/80 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
             />
           </div>
