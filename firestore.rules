@@ -1,0 +1,80 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Handlers
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\\\-]+$');
+    }
+    
+    function incoming() { 
+      return request.resource.data; 
+    }
+    
+    function existing() { 
+      return resource.data; 
+    }
+    
+    function isSignedIn() { 
+      return request.auth != null; 
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && 
+             request.auth.token.email_verified == true && 
+             (
+               request.auth.token.email == 'nadiaparveen1526@gmail.com' ||
+               request.auth.token.email == 'pintrestk11@gmail.com' ||
+               request.auth.token.email == 'tuijbialnajah@gmail.com' ||
+               request.auth.token.email == 'kamranaliarts69@gmail.com'
+             );
+    }
+
+    // Validation for Command
+    function isValidCommand(data) {
+      return data.keys().hasAll(['id', 'name', 'category', 'status', 'updatedAt']) && 
+             data.keys().size() == 5 &&
+             data.id is string && data.id.size() > 0 && data.id.size() <= 64 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 64 &&
+             data.category is string && data.category.size() > 0 && data.category.size() <= 64 &&
+             data.status in ['working', 'in_development', 'not_working'] &&
+             data.updatedAt is number;
+    }
+
+    // Public Commands
+    match /commands/{commandId} {
+      // Publicly readable dashboard
+      allow read: if true;
+      
+      // Only admins can write
+      allow create: if isAdmin() && 
+                       isValidId(commandId) && 
+                       isValidCommand(incoming()) && 
+                       incoming().id == commandId;
+                       
+      allow update: if isAdmin() && 
+                       isValidId(commandId) && 
+                       isValidCommand(incoming()) && 
+                       incoming().id == existing().id &&
+                       incoming().name == existing().name &&
+                       incoming().category == existing().category &&
+                       (
+                         incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+                       );
+                       
+      // Or if you want admins to be able to rename or recategorize:
+      // Since it's admin only, let's just restrict it to strictly what needs changing or allow full modification via isAdmin() hatch:
+      // The rules say "If the app has an admin feature, you MUST also include an || isAdmin() override so admins can correct states."
+      // Let's actually structure it as required:
+      // allow update: if isSignedIn() && isValidCommand(incoming()) && ( isAdmin() );
+      // wait, I already enforce isAdmin(). Let's keep it simple and strict:
+      
+      allow delete: if isAdmin() && isValidId(commandId);
+    }
+  }
+}

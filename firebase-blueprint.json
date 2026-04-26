@@ -1,0 +1,41 @@
+{
+  "entities": {
+    "Command": {
+      "title": "Command",
+      "description": "Represents a bot command and its current status.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The unique identifier of the command, typically category_name."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the command."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category the command belongs to."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["working", "in_development", "not_working"],
+          "description": "The current status of the command."
+        },
+        "updatedAt": {
+          "type": "number",
+          "description": "Timestamp of the last update."
+        }
+      },
+      "required": ["id", "name", "category", "status", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/commands/{commandId}": {
+      "schema": {
+        "$ref": "#/entities/Command"
+      },
+      "description": "Stores the status of all bot commands."
+    }
+  }
+}
