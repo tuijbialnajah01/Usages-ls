@@ -11,7 +11,7 @@ export const INITIAL_COMMANDS: Record<string, string[]> = {
   "Officer": ["addmod", "delmod"],
   "Owner": ["accept", "addsudo", "ban", "broadcast", "delsudo", "deny", "eval", "restart", "pull-update"],
   "Pokemon": ["bag", "battle", "cancel-evolution", "catch", "challenge", "pokedex", "equip", "givepoke", "heal", "learn", "mart", "mart-buy", "party", "pc", "pokemon", "spawnpokemon", "start-journey", "swap", "t2party", "t2pc", "trade", "trade-confirm", "trade-delete", "unequip"],
-  "Utils": ["calculator", "carbon", "coubs", "crypto", "img", "quotly", "react", "retrieve", "screenshot", "steal", "sticker", "telesticker", "track", "translator", "trivia", "upload", "urbandictionary", "wikipedia"],
+  "Utils": ["calculator", "carbon", "coubs", "crypto", "image", "img", "quotly", "react", "retrieve", "screenshot", "steal", "sticker", "telesticker", "track", "translator", "trivia", "upload", "urbandictionary", "wikipedia"],
   "Weeb": ["anime", "character", "divorce", "foxgirl", "haigusha", "hg", "kitsune", "manga", "marry", "neko", "waifu", "wallpaper"],
   "Yu-gi-oh-cards": ["discard", "giveyucard", "purchase", "sale", "swapyu", "t2yucollec", "t2yudeck", "yuclaim", "yucollection", "yudeck", "yuget", "yutrade", "yutrade-confirm", "yutrade-delete", "yugioh"]
 };
