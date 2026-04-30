@@ -215,7 +215,7 @@ export default function App() {
         >
            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]"></div>
-             Debug<span className="text-indigo-500 font-black">Zone</span>
+             RΞSPΩNSΞ <span className="text-indigo-500 font-black">LΛB</span>
            </h1>
         </motion.div>
 
