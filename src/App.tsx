@@ -134,10 +134,12 @@ export default function App() {
         cmdMap.set(cmd.id, cmd);
       }
     }
-    return Array.from(cmdMap.values()).sort((a, b) => {
+    const allList = Array.from(cmdMap.values());
+    const visibleList = user ? allList : allList.filter(c => c.status !== 'not_working');
+    return visibleList.sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
-  }, [dbCommands]);
+  }, [dbCommands, user]);
 
   const setCommandStatus = async (command: Command, newStatus: Status) => {
     if (!userIsAdmin) return;
@@ -172,6 +174,16 @@ export default function App() {
     const counts: Record<string, number> = {};
     for (const cmd of allCommands) {
       counts[cmd.category] = (counts[cmd.category] || 0) + 1;
+    }
+    return counts;
+  }, [allCommands]);
+
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { working: 0, in_development: 0, not_working: 0 };
+    for (const cmd of allCommands) {
+      if (counts[cmd.status] !== undefined) {
+        counts[cmd.status]++;
+      }
     }
     return counts;
   }, [allCommands]);
@@ -411,12 +423,12 @@ export default function App() {
                 transition={{ delay: 0.1 }} 
                 className="flex flex-wrap items-center gap-2"
               >
-                {(['working', 'in_development', 'not_working'] as const).map(status => (
+                {(user ? ['working', 'in_development', 'not_working'] : ['working', 'in_development'] as const).map((status: Status) => (
                   <button
                     key={status}
                     onClick={() => setSelectedStatus(selectedStatus === status ? null : status)}
                     className={cn(
-                      "px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors duration-300 border",
+                      "px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors duration-300 border flex items-center gap-2",
                       selectedStatus === status 
                         ? status === 'working' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
                         : status === 'in_development' ? "bg-amber-500/10 text-amber-400 border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.15)]"
@@ -424,7 +436,13 @@ export default function App() {
                         : "bg-white/5 text-slate-400 border-white/5 hover:bg-white/10 hover:text-white"
                     )}
                   >
-                    {STATUS_LABELS[status]}
+                    <span>{STATUS_LABELS[status]}</span>
+                    <span className={cn(
+                      "px-1.5 py-0.5 rounded-md text-[10px] bg-black/20",
+                      selectedStatus === status ? "text-inherit" : "text-slate-500"
+                    )}>
+                      {statusCounts[status] || 0}
+                    </span>
                   </button>
                 ))}
               </motion.div>
