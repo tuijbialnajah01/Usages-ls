@@ -130,8 +130,6 @@ export default function App() {
     for (const cmd of dbCommands) {
       if (cmdMap.has(cmd.id)) {
         cmdMap.set(cmd.id, { ...cmdMap.get(cmd.id)!, ...cmd });
-      } else {
-        cmdMap.set(cmd.id, cmd);
       }
     }
     const allList = Array.from(cmdMap.values());
