@@ -3,7 +3,7 @@ import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, User 
 import { collection, onSnapshot, doc, setDoc, getDocs, updateDoc, writeBatch } from 'firebase/firestore';
 import { auth, db, handleFirestoreError, OperationType } from './lib/firebase';
 import { INITIAL_COMMANDS } from './data/commands';
-import { CheckCircle2, CircleDashed, XCircle, LogIn, LogOut, ShieldCheck, Search, Database, ChevronDown, Filter } from 'lucide-react';
+import { CheckCircle2, CircleDashed, XCircle, LogIn, LogOut, ShieldCheck, Search, Database, ChevronDown, Filter, Copy, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from './lib/utils';
 
@@ -61,6 +61,13 @@ export default function App() {
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const copyToClipboard = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
@@ -493,7 +500,20 @@ export default function App() {
                         {selectedCategory === null && (
                           <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">{cmd.category}</div>
                         )}
-                        <h3 className="font-bold text-lg text-white tracking-tight group-hover:text-indigo-300 transition-colors">/{cmd.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-lg text-white tracking-tight group-hover:text-indigo-300 transition-colors">-{cmd.name}</h3>
+                          <button
+                            onClick={() => copyToClipboard(`-${cmd.name}`, cmd.id)}
+                            className="p-1.5 rounded-lg bg-white/5 text-slate-500 hover:bg-white/10 hover:text-indigo-400 transition-all active:scale-90"
+                            title="Copy command"
+                          >
+                            {copiedId === cmd.id ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        </div>
                       </div>
                       <span className={cn(
                         "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-inner",
